@@ -6,10 +6,10 @@ use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Handlers\Strategies\RequestResponseArgs;
 
-define('APP_ROOT', dirname(__DIR__));
+define('APP_ROOT', __DIR__);
 
 // Load the Composer autoloader
-require_once APP_ROOT . '\vendor\autoload.php';
+require_once APP_ROOT . '/vendor/autoload.php';
 
 // Load the environment variables
 $dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
@@ -19,7 +19,7 @@ $dotenv->load();
 $containerBuilder = new ContainerBuilder();
 
 // Add container definitions
-$container = $containerBuilder->addDefinitions(APP_ROOT . '\config\definitions.php')
+$container = $containerBuilder->addDefinitions(APP_ROOT . '/config/definitions.php')
                                 ->build();
 
 AppFactory::setContainer($container);
@@ -38,7 +38,7 @@ $app->addErrorMiddleware(displayErrorDetails: true,
 
 
 // Load the routes
-require_once APP_ROOT . '\config\routes.php';
+require_once APP_ROOT . '/config/routes.php';
 
 // Run the Slim app
 $app->run();

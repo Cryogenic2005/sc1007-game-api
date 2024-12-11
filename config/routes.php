@@ -6,8 +6,12 @@ use Slim\Routing\RouteCollectorProxy;
 use \App\Controllers\ApiRoot;
 use App\Controllers\Account;
 use App\Controllers\PlayerData;
+use App\Controllers\Home;
 use App\Middleware\ValidateId;
 use App\Middleware\AddJsonResponseHeader;
+
+// Route to home page
+$app->get('/', Home::class);
 
 // Route for the root of the API
 $app->group('/api', function (RouteCollectorProxy $group) {
