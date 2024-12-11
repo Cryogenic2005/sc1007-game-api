@@ -30,16 +30,4 @@ $app->group('/api', function (RouteCollectorProxy $group) {
             $group->patch('/', [Account::class, 'updatePassword']); // Update target account password
         })->add(ValidateId::class); // Validate the account ID
     });
-
-    // Player data routes
-    $group->group('/player-data', function (RouteCollectorProxy $group){
-        // General player data actions
-        $group->get('/', [PlayerData::class, 'getAll']);
-
-        // Actions that require a specific account ID
-        $group->group('/{id:[0-9]+}', function (RouteCollectorProxy $group){
-            $group->get('/', [PlayerData::class, 'getById']); // Get target player data
-            $group->patch('/', [PlayerData::class, 'updateData']); // Update target player data
-        })->add(ValidateId::class); // Validate the account ID
-    });
 })->add(AddJsonResponseHeader::class); // Add JSON response header to all routes in the group

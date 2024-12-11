@@ -16,12 +16,6 @@ return [
                          ->getPDO($_ENV["ROOT_API_USER"], $_ENV["ROOT_API_PASSWORD"]);
         return new UserRepository($pdo);
     },
-
-    PlayerDataRepository::class => function($container) {
-        $pdo = $container->get(Database::class)
-                         ->getPDO($_ENV["ROOT_API_USER"], $_ENV["ROOT_API_PASSWORD"]);
-        return new PlayerDataRepository($pdo);
-    },
     
     PhpRenderer::class => function($container) {
         return new PhpRenderer(__DIR__ . '/../views');
