@@ -12,8 +12,10 @@ define('APP_ROOT', __DIR__);
 require_once APP_ROOT . '/vendor/autoload.php';
 
 // Load the environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
-$dotenv->load();
+if (file_exists(APP_ROOT . '/.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
+    $dotenv->load();
+}
 
 // Build the container
 $containerBuilder = new ContainerBuilder();
