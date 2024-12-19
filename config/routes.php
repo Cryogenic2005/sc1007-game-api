@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Slim\Routing\RouteCollectorProxy;
 use \App\Controllers\ApiRoot;
 use App\Controllers\Account;
-use App\Controllers\PlayerData;
 use App\Controllers\Home;
 use App\Middleware\ValidateId;
 use App\Middleware\AddJsonResponseHeader;

@@ -2,7 +2,6 @@
 
 use App\Database;
 use App\Repositories\UserRepository;
-use App\Repositories\PlayerDataRepository;
 use Slim\Views\PhpRenderer;
 
 return [
