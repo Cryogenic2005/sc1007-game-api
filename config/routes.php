@@ -8,6 +8,7 @@ use App\Controllers\Account;
 use App\Controllers\Home;
 use App\Middleware\ValidateId;
 use App\Middleware\AddJsonResponseHeader;
+use App\Middleware\RequireAPIKey;
 
 // Route to home page
 $app->get('/', Home::class);
@@ -29,4 +30,5 @@ $app->group('/api', function (RouteCollectorProxy $group) {
             $group->patch('', [Account::class, 'updatePassword']); // Update target account password
         })->add(ValidateId::class); // Validate the account ID
     });
-})->add(AddJsonResponseHeader::class); // Add JSON response header to all routes in the group
+})->add(AddJsonResponseHeader::class) // Add JSON response header to all routes in the group
+  ->add(RequireAPIKey::class); // Require an API key for all routes in the group
