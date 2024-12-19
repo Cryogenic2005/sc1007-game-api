@@ -10,7 +10,7 @@ use App\Middleware\ValidateId;
 use App\Middleware\AddJsonResponseHeader;
 
 // Route to home page
-$app->get('', Home::class);
+$app->get('/', Home::class);
 
 // Route for the root of the API
 $app->group('/api', function (RouteCollectorProxy $group) {
