@@ -6,7 +6,7 @@ use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Handlers\Strategies\RequestResponseArgs;
 
-define('APP_ROOT', __DIR__);
+define('APP_ROOT', dirname(__DIR__));
 
 // Load the Composer autoloader
 require_once APP_ROOT . '/vendor/autoload.php';
