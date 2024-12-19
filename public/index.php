@@ -5,6 +5,7 @@ declare(strict_types=1);
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Handlers\Strategies\RequestResponseArgs;
+use Middlewares\TrailingSlash;
 
 define('APP_ROOT', dirname(__DIR__));
 
@@ -31,13 +32,12 @@ $app = AppFactory::create();
 
 // Set the default invocation strategy
 $app->getRouteCollector()->setDefaultInvocationStrategy(new RequestResponseArgs());
-
 // Add middleware
 $app->addBodyParsingMiddleware(); // Add body parsing middleware
 $app->addErrorMiddleware(displayErrorDetails: true,
                          logErrors: true, 
                          logErrorDetails: true); // Add error handling middleware
-
+$app->add(TrailingSlash::class); // Add trailing slash middleware
 
 // Load the routes
 require_once APP_ROOT . '/config/routes.php';
