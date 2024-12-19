@@ -13,7 +13,7 @@ return [
 
     UserRepository::class => function($container) {
         $pdo = $container->get(Database::class)
-                         ->getPDO($_ENV["ROOT_API_USER"], $_ENV["ROOT_API_PASSWORD"]);
+                         ->getPDO($_ENV["ACCOUNT_INFO_USER"], $_ENV["ACCOUNT_INFO_PASSWORD"]);
         return new UserRepository($pdo);
     },
     
