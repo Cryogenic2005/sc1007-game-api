@@ -25,7 +25,7 @@ class ValidateJWT
         if (!$request->hasHeader('Authorization')) {
             $response = $this->responseFactory->createResponse();
             $response->getBody()
-                     ->write('Authorization header required');
+                     ->write(json_encode(['error' => 'Authorization header required']));
 
             return $response->withStatus(400);
         }
@@ -35,58 +35,37 @@ class ValidateJWT
         
         if (empty($jwt)) {
             $response = $this->responseFactory->createResponse();
-            $response->getBody()->write('JWT required');
+            $response->getBody()->write(json_encode(['error' => 'JWT required']));
             
             return $response->withStatus(400);
         }
 
         $payload = JWTHelper::getJWTPayload($jwt, $_ENV['JWT_SECRET']);
-        
-        switch ($payload['status']) {
-            case JWTError::SUCCESS:
-                # Validate username
-                $account = $this->userRepository->getById($payload['sub']);
-                if ($account === null) {
-                    $response = $this->responseFactory->createResponse();
-                    $response->getBody()->write('Invalid JWT');
-                    
-                    return $response->withStatus(400);
-                }
-        
-                # Validate user ID
-                if ($account['id'] !== $payload['sub']) {
-                    $response = $this->responseFactory->createResponse();
-                    $response->getBody()->write('Invalid JWT');
-                    
-                    return $response->withStatus(400);
-                }
 
-                $request = $request
-                    ->withAttribute('id', $payload['sub'])
-                    ->withAttribute('name', $payload['name']);
-                return $handler->handle($request);
-            case JWTError::EXPIRED:
-                $response = $this->responseFactory->createResponse();
-                $response->getBody()->write('JWT expired');
-                
-                return $response->withStatus(401);
-            case JWTError::BEFORE_VALID:
-                $response = $this->responseFactory->createResponse();
-                $response->getBody()->write('JWT not yet valid');
-                
-                return $response->withStatus(401);
-            case JWTError::SIGNATURE_INVALID:
-                $response = $this->responseFactory->createResponse();
-                $response->getBody()->write('JWT signature invalid');
-                
-                return $response->withStatus(401);
-            case JWTError::JWT_EXCEPTION:
-                $response = $this->responseFactory->createResponse();
-                $response->getBody()->write('Invalid JWT');
-                
-                return $response->withStatus(400);
-            default:
-                throw new \Slim\Exception\HttpInternalServerErrorException($request);
+        if ($payload['status'] === JWTError::SUCCESS)
+        {
+            $request = $request
+                ->withAttribute('sub', $payload['sub'])
+                ->withAttribute('name', $payload['name']);
+            return $handler->handle($request);
         }
+        
+        $response = $this->responseFactory->createResponse();
+        $error_message = match($payload['status']) {
+            JWTError::EXPIRED => 'JWT expired',
+            JWTError::BEFORE_VALID => 'JWT not yet valid',
+            JWTError::SIGNATURE_INVALID => 'Invalid JWT signature',
+            JWTError::JWT_EXCEPTION => 'Error decoding JWT',
+            JWTError::UNKNOWN => 'Unknown error',
+        };
+        $error_code = match($payload['status']) {
+            JWTError::JWT_EXCEPTION => 400,
+            JWTError::UNKNOWN => 500,
+            default => 401,
+        };
+
+        $response->getBody()->write(json_encode(['error' => $error_message]));
+
+        return $response->withStatus($error_code);
     }
 }
