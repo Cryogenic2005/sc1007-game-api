@@ -33,5 +33,5 @@ $app->group('/api', function (RouteCollectorProxy $group) {
             $group->patch('', [Account::class, 'updatePassword']); // Update target account password
         })->add(ValidateId::class); // Validate the account ID
     });
-})->add(AddJsonResponseHeader::class) // Add JSON response header to all routes in the group
-  ->add(ValidateJWT::class); // Require an API key for all routes in the group
+})->add(ValidateJWT::class) // Add JSON response header to all routes in the group
+  ->add(AddJsonResponseHeader::class); // Require an API key for all routes in the group
