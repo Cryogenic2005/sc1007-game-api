@@ -33,7 +33,9 @@ class UserRepository
      */
     public function getById(int $id): array|null
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM ' . self::TABLE . ' WHERE id = :id');
+        $sql = 'SELECT * FROM ' . self::TABLE . ' WHERE id = :id';
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
@@ -45,8 +47,9 @@ class UserRepository
      */
     public function getAll(): array
     {
-        $stmt = $this->pdo->query('SELECT * FROM ' . self::TABLE);
-
+        $sql = 'SELECT * FROM ' . self::TABLE;
+        
+        $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -60,7 +63,9 @@ class UserRepository
     {
         $password = password_hash($password, PASSWORD_DEFAULT);
 
-        $stmt = $this->pdo->prepare('INSERT INTO ' . self::TABLE . ' (username, password) VALUES (:username, :password)');
+        $sql = 'INSERT INTO ' . self::TABLE . ' (username, password) VALUES (:username, :password)';
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['username' => $username, 'password' => $password]);
 
         return (int) $this->pdo->lastInsertId();
@@ -75,7 +80,9 @@ class UserRepository
     {
         $password = password_hash($password, PASSWORD_DEFAULT);
 
-        $stmt = $this->pdo->prepare('UPDATE ' . self::TABLE . ' SET password = :password WHERE id = :id');
+        $sql = 'UPDATE ' . self::TABLE . ' SET password = :password WHERE id = :id';
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id, 'password' => $password]);
     }
 }
