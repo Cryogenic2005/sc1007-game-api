@@ -85,4 +85,18 @@ class UserRepository
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id, 'password' => $password]);
     }
+
+    /**
+     * Update account login status
+     * @param int $id The account ID to update
+     * @param bool $loggedIn The new login status
+     */
+
+    public function updateLoginStatus(int $id, bool $loggedIn): void
+    {
+        $sql = 'UPDATE ' . self::TABLE . ' SET logged_in = :logged_in WHERE id = :id';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id' => $id, 'logged_in' => $loggedIn]);
+    }
 }
