@@ -10,6 +10,13 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\SignatureInvalidException;
 
+/** Enum for types of JWTokens */
+enum JWTType : string
+{
+    case ACCESS = 'ACCESS';
+    case REFRESH = 'REFRESH';
+}
+
 enum JWTError
 {
     case SUCCESS;
@@ -24,46 +31,87 @@ enum JWTError
 class JWTHelper
 {
     private const ALGORITHM = 'HS256';
-    private const EXPIRATION = 3600; // 1 hour
-    private const HEADER = ['typ' => 'JWT', 'alg' => self::ALGORITHM];
 
-    public static function createJWT(array $data): string
+    /**
+     * Create a JWToken for a user
+     * @param string $sub The user ID owning this JWT
+     * @param string $name The user name owning this JWT
+     * @param int $duration The duration of the JWT in seconds
+     * @param array $headers The headers to include in the JWT
+     * @return array The payload and token of the JWT (keyed by 'payload' and 'token')
+     */
+    public static function createJWT(
+        int $sub,
+        string $name,
+        int $duration,
+        JWTType $tokenType): array
     {
+        $headers = [
+            'typ' => 'JWT',
+            'alg' => self::ALGORITHM
+        ];
+
         $issuedAt = time();
-        $expirationTime = $issuedAt + self::EXPIRATION;
+        $expirationTime = $issuedAt + $duration;
         $payload = array(
             'iat' => $issuedAt,
             'exp' => $expirationTime,
-            'sub' => $data['id'],
-            'name' => $data['name']
+            'token_type' => $tokenType->value,
+            'sub' => $sub,
+            'name' => $name
         );
 
-        return self::encodeJWT($payload, self::HEADER);
+        return [
+            'payload' => $payload,
+            'token' => self::encodeJWT($payload, $headers)
+        ];
     }
 
-    public static function getJWTPayload(string $jwt, string $secret): array
+    /**
+     * Get the payload of a JWT
+     * @param string $jwt The JWT to get the payload from
+     * @return array The payload of the JWT
+     */
+    public static function getJWTPayload(string $jwt): array
     {
         $payload = null;
         $status = JWTError::SUCCESS;
         try {
             $payload = self::decodeJWT($jwt);
-        } catch (ExpiredException $e) {
-            $status = JWTError::EXPIRED;
-        } catch (BeforeValidException $e) {
-            $status = JWTError::BEFORE_VALID;
-        } catch (SignatureInvalidException $e) {
-            $status = JWTError::SIGNATURE_INVALID;
-        } catch (\UnexpectedValueException | \DomainException) {
-            $status = JWTError::JWT_EXCEPTION;
-        } catch (\Exception $e) {
-            $status = JWTError::UNKNOWN;
+        } catch (\Exception $e){
+            $status = match($e::class) {
+                ExpiredException::class => JWTError::EXPIRED,
+                BeforeValidException::class => JWTError::BEFORE_VALID,
+                SignatureInvalidException::class => JWTError::SIGNATURE_INVALID,
+                \UnexpectedValueException::class, \DomainException::class => JWTError::JWT_EXCEPTION,
+                default => JWTError::UNKNOWN
+            };
         }
 
         return [
             'status' => $status,
+            'token_type' => $payload->token_type ?? null,
+            'exp' => $payload->exp ?? null,
             'sub' => $payload->sub ?? null,
             'name' => $payload->name ?? null
         ];
+    }
+
+    public static function verifyJWTPayload(string $jwt, string $type = null, int $id = null, string $name = null): bool
+    {
+        $header = base64_decode(explode('.', $jwt)[0]);
+        $payload = base64_decode(explode('.', $jwt)[1]);
+
+        $header = json_decode($header);
+        $payload = json_decode($payload);
+
+        if ($type !== null && $header->typ !== $type) return false;
+
+        if ($id !== null && $payload->sub !== $id) return false;
+
+        if ($name !== null && $payload->name !== $name) return false; 
+
+        return true;
     }
 
     /**
