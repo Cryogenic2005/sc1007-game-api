@@ -23,7 +23,7 @@ class TokenIssuer
         $this->refreshTokenValidator->mapFieldsRules([
             'id' => ['required'],
             'name' => ['required'],
-            'refresh_token' => ['required']
+            'refreshToken' => ['required']
         ]);
     }
     
@@ -39,7 +39,7 @@ class TokenIssuer
 
         $id = $body['id'];
         $name = $body['name'];
-        $refresh_token = $body['refresh_token'];
+        $refresh_token = $body['refreshToken'];
 
         $isTokenValid = $this->tokenRepository->validateToken($refresh_token);
         if ($isTokenValid === null) { // Null means there was an internal error
