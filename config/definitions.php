@@ -20,7 +20,7 @@ return [
     TokenRepository::class => function($container) {
         $pdo = $container->get(Database::class)
                          ->getPDO($_ENV["TOKEN_MANAGER_USER"], $_ENV["TOKEN_MANAGER_PASSWORD"]);
-        return new TokenRepository($pdo, $container->get(UserRepository::class));
+        return new TokenRepository($pdo);
     },
     
     PhpRenderer::class => function($container) {
