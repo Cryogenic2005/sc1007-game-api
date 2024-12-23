@@ -13,7 +13,6 @@ class Account
 {
     private Validator $createValidator;
     private Validator $updatePasswordValidator;
-    private Validator $loginValidator;
 
     public function __construct(private UserRepository $userRepository)
     {
@@ -27,12 +26,6 @@ class Account
         $this->updatePasswordValidator->mapFieldsRules([
             'password' => ['required'],
             'newPassword' => ['required', ['lengthBetween', 8, 32]]
-        ]);
-        
-        $this->loginValidator = new Validator();
-        $this->loginValidator->mapFieldsRules([
-            'username' => ['required'],
-            'password' => ['required']
         ]);
     }
 
@@ -141,47 +134,6 @@ class Account
         $response->getBody()->write(json_encode([
             'status' => 'success',
             'message' => 'Password updated'
-        ], JSON_FORCE_OBJECT));
-
-        return $response;
-    }
-
-    public function login(Request $request, Response $response)
-    {
-        $body = $request->getParsedBody();
-
-        $validator = $this->loginValidator->withData($body);
-        // Validate the request body
-        if(!$validator->validate()){ // If validation fails
-            $response->getBody()
-                     ->write(json_encode($validator->errors(), 
-                                         JSON_FORCE_OBJECT));
-
-            return $response->withStatus(422);
-        }
-
-        $username = $body['username'];
-        $password = $body['password'];
-        
-        $account = $this->userRepository->getByUsername($username);
-
-        // If account is not found or password is incorrect, return a 401 Unauthorized response
-        if ($account === null || !password_verify($password, $account['password'])) {
-            $body = json_encode([
-                'status' => 'error',
-                'message' => 'Invalid username or password',
-                'id' => null
-            ], JSON_FORCE_OBJECT);
-
-            $response->getBody()->write($body);
-
-            return $response->withStatus(401);
-        }
-
-        $response->getBody()->write(json_encode([
-            'status' => 'success',
-            'message' => 'Account logged in',
-            'id' => $account['id']
         ], JSON_FORCE_OBJECT));
 
         return $response;
