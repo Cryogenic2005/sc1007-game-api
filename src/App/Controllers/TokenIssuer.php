@@ -31,9 +31,10 @@ class TokenIssuer
     {
         $body = $request->getParsedBody();
         $validator = $this->refreshTokenValidator->withData($body);
+        
         if (!$validator->validate()) {
             $response->getBody()
-                     ->write(json_encode($this->refreshTokenValidator->errors(), JSON_FORCE_OBJECT));
+                     ->write(json_encode($validator->errors(), JSON_FORCE_OBJECT));
             return $response->withStatus(400);
         }
 
