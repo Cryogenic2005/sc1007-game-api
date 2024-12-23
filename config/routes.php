@@ -25,7 +25,7 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     $group->post('/login', Login::class); // Login to the API
 
     // Routes for retrieve JWTokens
-    $group->get('/token', TokenIssuer::class); // Retrieve a new JWT
+    $group->post('/token', TokenIssuer::class); // Retrieve a new JWT
 
     // Account routes
     $group->group('/account', function (RouteCollectorProxy $group){
