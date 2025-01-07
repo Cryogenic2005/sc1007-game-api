@@ -7,23 +7,23 @@ use Slim\Views\PhpRenderer;
 
 return [
     Database::class => function() {
-        return new Database($_ENV["DB_HOST"],
-                            $_ENV["DB_NAME"]);
+        return new Database($_SERVER["DB_HOST"],
+                            $_SERVER["DB_NAME"]);
     },
 
     UserRepository::class => function($container) {
         $pdo = $container->get(Database::class)
-                         ->getPDO($_ENV["ACCOUNT_INFO_USER"], $_ENV["ACCOUNT_INFO_PASSWORD"]);
+                         ->getPDO($_SERVER["ACCOUNT_INFO_USER"], $_SERVER["ACCOUNT_INFO_PASSWORD"]);
         return new UserRepository($pdo);
     },
 
     TokenRepository::class => function($container) {
         $pdo = $container->get(Database::class)
-                         ->getPDO($_ENV["TOKEN_MANAGER_USER"], $_ENV["TOKEN_MANAGER_PASSWORD"]);
+                         ->getPDO($_SERVER["TOKEN_MANAGER_USER"], $_SERVER["TOKEN_MANAGER_PASSWORD"]);
         return new TokenRepository($pdo);
     },
     
-    PhpRenderer::class => function($container) {
+    PhpRenderer::class => function() {
         return new PhpRenderer(__DIR__ . '/../views');
     }
 ];

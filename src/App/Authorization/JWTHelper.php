@@ -122,7 +122,7 @@ class JWTHelper
      */
     private static function encodeJWT(array $payload, array $header): string
     {
-        return JWT::encode($payload, $_ENV['JWT_SECRET'], self::ALGORITHM, head: $header);
+        return JWT::encode($payload, $_SERVER['JWT_SECRET'], self::ALGORITHM, head: $header);
     }
 
     /**
@@ -138,6 +138,6 @@ class JWTHelper
      */
     private static function decodeJWT(string $jwt): object
     {
-        return JWT::decode($jwt, new Key($_ENV['JWT_SECRET'], self::ALGORITHM));
+        return JWT::decode($jwt, new Key($_SERVER['JWT_SECRET'], self::ALGORITHM));
     }
 }
