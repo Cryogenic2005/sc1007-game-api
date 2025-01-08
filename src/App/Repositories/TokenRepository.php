@@ -72,10 +72,10 @@ class TokenRepository
 
         $tokenHash = hash('sha256', $generatedTokenInfo['token']);
 
-        $query = "INSERT INTO " . self::TABLE . " (id, token) VALUES (:id, :token)";
+        $query = "INSERT INTO " . self::TABLE . " (user_id, token) VALUES (:user_id, :token)";
         $stmt = $this->pdo->prepare($query);
         
-        $stmt->execute(['id' => $sub, 'token' => $tokenHash]);
+        $stmt->execute(['user_id' => $sub, 'token' => $tokenHash]);
 
         return $generatedTokenInfo;
     }
@@ -100,9 +100,9 @@ class TokenRepository
      */
     public function deleteTokensForUser(int $sub): void
     {
-        $query = "DELETE FROM " . self::TABLE . " WHERE id = :id";
+        $query = "DELETE FROM " . self::TABLE . " WHERE user_id = :user_id";
         $stmt = $this->pdo->prepare($query);
 
-        $stmt->execute(['id' => $sub]);
+        $stmt->execute(['user_id' => $sub]);
     }
 }
