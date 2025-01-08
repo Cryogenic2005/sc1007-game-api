@@ -26,10 +26,10 @@ class TokenRepository
     {
         $tokenHash = hash('sha256', $refreshToken);
 
-        $query = "SELECT * FROM " . self::TABLE . " WHERE refresh_token_hash = :refresh_token_hash";
+        $query = "SELECT * FROM " . self::TABLE . " WHERE token = :token";
         $stmt = $this->pdo->prepare($query);
 
-        $stmt->execute(['refresh_token_hash' => $tokenHash]);
+        $stmt->execute(['token' => $tokenHash]);
 
         $token_data = $stmt->fetch();
 
@@ -72,10 +72,10 @@ class TokenRepository
 
         $tokenHash = hash('sha256', $generatedTokenInfo['token']);
 
-        $query = "INSERT INTO " . self::TABLE . " (id, refresh_token_hash) VALUES (:id, :refresh_token_hash)";
+        $query = "INSERT INTO " . self::TABLE . " (id, token) VALUES (:id, :token)";
         $stmt = $this->pdo->prepare($query);
         
-        $stmt->execute(['id' => $sub, 'refresh_token_hash' => $tokenHash]);
+        $stmt->execute(['id' => $sub, 'token' => $tokenHash]);
 
         return $generatedTokenInfo;
     }
@@ -88,10 +88,10 @@ class TokenRepository
     {
         $tokenHash = hash('sha256', $refreshToken);
 
-        $query = "DELETE FROM " . self::TABLE . " WHERE refresh_token_hash = :refresh_token_hash";
+        $query = "DELETE FROM " . self::TABLE . " WHERE token = :token";
         $stmt = $this->pdo->prepare($query);
 
-        $stmt->execute(['refresh_token_hash' => $tokenHash]);
+        $stmt->execute(['token' => $tokenHash]);
     }
 
     /**
