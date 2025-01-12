@@ -26,8 +26,12 @@ class ValidateId
         if ($this->userRepository->getById((int) $id) === null) {
             throw new \Slim\Exception\HttpNotFoundException($request);
         }
+        
+        $jwt_id = $request->getAttribute('id');
 
-        $request = $request->withAttribute('id', $id);
+        if ($jwt_id !== (int) $id) {
+            throw new \Slim\Exception\HttpForbiddenException($request, 'You do not have permission to access this resource');
+        }
 
         return $handler->handle($request);
     }

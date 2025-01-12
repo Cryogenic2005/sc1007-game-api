@@ -50,7 +50,7 @@ class ValidateJWT
             }
 
             $request = $request
-                ->withAttribute('sub', $payload['sub'])
+                ->withAttribute('id', $payload['sub'])
                 ->withAttribute('name', $payload['name']);
             return $handler->handle($request);
         }
