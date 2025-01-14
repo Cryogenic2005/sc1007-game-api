@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use Valitron\Validator;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -16,6 +17,8 @@ class CodeSubmission
     private static $MEMORY_LIMIT = 128;
     private static $MAX_LENGTH = 256;
 
+    private Validator $codeValidator;
+
     public function __construct()
     {
         self::$DOCKER_PATH = dirname(__DIR__, 2)
@@ -23,11 +26,26 @@ class CodeSubmission
 
         self::$DOCKERFILE_PATH = self::$DOCKER_PATH
             . DIRECTORY_SEPARATOR . 'Dockerfile';
+
+        $this->codeValidator = new Validator();
+        $this->codeValidator->mapFieldsRules([
+            'code' => ['required']
+        ]);
     }
 
     public function __invoke(Request $request, Response $response)
     {
         $body = $request->getParsedBody();
+
+        // Validate the request body
+        $validator = $this->codeValidator->withData($body);
+        if(!$validator->validate()){ // If validation fails
+            $response->getBody()
+                     ->write(json_encode($validator->errors(),
+                                                 JSON_FORCE_OBJECT));
+
+            return $response->withStatus(422);
+        }
 
         $code = $body['code'];
         
