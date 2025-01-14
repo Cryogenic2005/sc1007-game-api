@@ -129,8 +129,8 @@ class CodeSubmission
         }
         finally{
             // Remove the temporary file
-            // unlink($tempErrorFile);
-            // unlink($tempOutputFile);
+            unlink($tempErrorFile);
+            unlink($tempOutputFile);
         }
 
         return $json_output;
