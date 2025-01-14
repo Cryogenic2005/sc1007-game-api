@@ -1,6 +1,3 @@
 .env
 
 /vendor
-
-.serverless
-serverless.yml
