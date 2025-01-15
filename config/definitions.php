@@ -3,7 +3,6 @@
 use App\Database;
 use App\Repositories\UserRepository;
 use App\Repositories\TokenRepository;
-use Slim\Views\PhpRenderer;
 
 return [
     Database::class => function() {
@@ -22,8 +21,4 @@ return [
                          ->getPDO($_SERVER["TOKEN_MANAGER_USER"], $_SERVER["TOKEN_MANAGER_PASSWORD"]);
         return new TokenRepository($pdo);
     },
-    
-    PhpRenderer::class => function() {
-        return new PhpRenderer(__DIR__ . '/../views');
-    }
 ];
