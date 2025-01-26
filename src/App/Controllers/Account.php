@@ -11,6 +11,9 @@ use Valitron\Validator;
 
 class Account
 {
+    private const PASSWORD_MIN_LENGTH = 7;
+    private const PASSWORD_MAX_LENGTH = 32;
+
     private Validator $createValidator;
     private Validator $updatePasswordValidator;
 
@@ -19,13 +22,13 @@ class Account
         $this->createValidator = new Validator();
         $this->createValidator->mapFieldsRules([
             'username' => ['required'],
-            'password' => ['required', ['lengthBetween', 8, 32]]
+            'password' => ['required', ['lengthBetween', self::PASSWORD_MIN_LENGTH, self::PASSWORD_MAX_LENGTH]]
         ]);
 
         $this->updatePasswordValidator = new Validator();
         $this->updatePasswordValidator->mapFieldsRules([
             'password' => ['required'],
-            'newPassword' => ['required', ['lengthBetween', 8, 32]]
+            'newPassword' => ['required', ['lengthBetween', self::PASSWORD_MIN_LENGTH, self::PASSWORD_MAX_LENGTH]]
         ]);
     }
 
