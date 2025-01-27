@@ -41,6 +41,14 @@ class UserRepository
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
+    public function getAllAdmins(): array
+    {
+        $sql = 'SELECT * FROM ' . self::TABLE . ' WHERE isAdmin = 1';
+
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * Get all accounts
      * @return array All accounts
@@ -98,5 +106,13 @@ class UserRepository
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id, 'logged_in' => $loggedIn]);
+    }
+
+    public function updateAdminStatus(int $id, bool $isAdmin): void
+    {
+        $sql = 'UPDATE ' . self::TABLE . ' SET isAdmin = :isAdmin WHERE id = :id';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id' => $id, 'isAdmin' => $isAdmin]);
     }
 }
