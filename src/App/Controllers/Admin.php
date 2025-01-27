@@ -30,7 +30,7 @@ class Admin
 
     public function setAdmin(Request $request, Response $response, string $id)
     {
-        $this->userRepository->setAdminStatus($id, true);
+        $this->userRepository->updateAdminStatus((int) $id, true);
 
         $response->getBody()->write(json_encode(['message' => 'User is now an admin'], JSON_FORCE_OBJECT));
 
@@ -39,7 +39,7 @@ class Admin
 
     public function unsetAdmin(Request $request, Response $response, string $id)
     {
-        $this->userRepository->setAdminStatus($id, false);
+        $this->userRepository->updateAdminStatus((int) $id, false);
 
         $response->getBody()->write(json_encode(['message' => 'User is no longer an admin'], JSON_FORCE_OBJECT));
 
