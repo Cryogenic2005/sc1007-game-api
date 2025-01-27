@@ -7,11 +7,19 @@ namespace App\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Repositories\UserRepository;
+use Valitron\Validator;
 
 /** Controller for managing actions on admin accounts */
 class Admin
 {
-    public function __construct(private UserRepository $userRepository) { }
+    private Validator $updateAdminValidator;
+
+    public function __construct(private UserRepository $userRepository)
+    {
+        $this->updateAdminValidator = new Validator([]);
+        $this->updateAdminValidator->rule('required', 'isAdmin');
+        $this->updateAdminValidator->rule('in', 'isAdmin', [0, 1]); // 0 = false, 1 = true
+    }
 
     /** Get all admin accounts */
     public function getAll(Request $request, Response $response)
@@ -28,7 +36,31 @@ class Admin
         return $response;
     }
 
-    public function setAdmin(Request $request, Response $response, string $id)
+    public function updateAdmin(Request $request, Response $response, string $id)
+    {
+        $data = $request->getParsedBody();
+
+        $validator = $this->updateAdminValidator->withData($data);
+        if(!$validator->validate()){
+            $response->getBody()
+                     ->write(json_encode($validator->errors(), JSON_FORCE_OBJECT));
+
+            return $response->withStatus(422);
+        }
+
+        if (!isset($data['isAdmin'])) {
+            $response->getBody()->write(json_encode(['error' => 'isAdmin field is required'], JSON_FORCE_OBJECT));
+            return $response->withStatus(400);
+        }
+
+        if ($data['isAdmin'] === 'true') {
+            return $this->setAdmin($request, $response, $id);
+        }
+
+        return $this->unsetAdmin($request, $response, $id);
+    }
+
+    private function setAdmin(Request $request, Response $response, string $id)
     {
         $this->userRepository->updateAdminStatus((int) $id, true);
 
@@ -37,7 +69,7 @@ class Admin
         return $response;
     }
 
-    public function unsetAdmin(Request $request, Response $response, string $id)
+    private function unsetAdmin(Request $request, Response $response, string $id)
     {
         $this->userRepository->updateAdminStatus((int) $id, false);
 

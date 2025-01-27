@@ -34,6 +34,15 @@ $app->group('/api', function (RouteCollectorProxy $group) {
             $group->get('', [Account::class, 'getAll']); // Get all accounts
     
             $group->post('', [Account::class, 'create']); // Create new account
+
+            $group->group('/admin', function (RouteCollectorProxy $group){
+    
+                $group->get('', [Account::class, 'getAllAdmins']); // Get all admin accounts
+    
+                $group->patch('/{id:[0-9+]}', [Account::class, 'updateAdmin'])
+                      ->add(ValidateId::class); // Change account admin status
+    
+            });
     
             // Actions that require a specific account ID
             $group->group('/{id:[0-9+]}', function (RouteCollectorProxy $group){
