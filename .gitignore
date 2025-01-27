@@ -1,5 +1,10 @@
 .env
 
+# VSCode
+/.vscode
+
+# Composer
 /vendor
 
+# Utility scripts
 /scripts
