@@ -11,6 +11,7 @@ use App\Controllers\Login;              // Controller for login
 use App\Controllers\TokenIssuer;        // Controller for managing JSON Web Token
 
 use App\Middleware\AddJsonResponseHeader;   // Middleware for adding JSON response header to responses
+use App\Middleware\RequireAdmin;            // Middleware for requiring admin privileges
 use App\Middleware\ValidateId;              // Middleware for validating an ID
 use App\Middleware\ValidateJWT;             // Middleware for validating a JWT
 
@@ -53,7 +54,7 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     
             })->add(ValidateId::class); // Validate the account ID
     
-        });
+        })->add(RequireAdmin::class); // Require admin privileges for all account routes
 
     })->add(ValidateJWT::class); // Require a valid JWToken for all routes in this group
 
