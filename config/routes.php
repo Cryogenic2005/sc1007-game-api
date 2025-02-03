@@ -8,6 +8,7 @@ use App\Controllers\Account;            // Controller for managing actions on ac
 use App\Controllers\ApiRoot;            // Controller for the root of the API
 use App\Controllers\CodeSubmission;     // Controller for submitting code to be executed
 use App\Controllers\Login;              // Controller for login
+use App\Controllers\PlayerData;         // Controller for managing player data
 use App\Controllers\TokenIssuer;        // Controller for managing JSON Web Token
 
 use App\Middleware\AddJsonResponseHeader;   // Middleware for adding JSON response header to responses
@@ -43,6 +44,12 @@ $app->group('/api', function (RouteCollectorProxy $group) {
                 $group->patch('', [Account::class, 'updatePassword']); // Update account password
     
             })->add(ValidateId::class); // Validate the account ID
+    
+        });
+
+        $group->group('/playerdata', function (RouteCollectorProxy $group){
+    
+            $group->patch('', [PlayerData::class, 'updateData']); // Update player data
     
         });
 
