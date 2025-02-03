@@ -10,20 +10,29 @@ class PlayerDataRepository
     private const TABLE = 'player_data';
 
     public function __construct(private \PDO $pdo) {}
-    
-    public function updatePlayerData(int $playerId, string $field, $value): bool
+
+    public function getRecord(int $playerId, string $puzzle_name): array
     {
-        // Check if the field exists
-        $stmt = $this->pdo->prepare("SELECT $field FROM " . self::TABLE . " WHERE player_id = :player_id");
-        $stmt->execute(['player_id' => $playerId]);
-        if ($stmt->rowCount() === 0) {
-            return false; // Field does not exist
-        }
+        $stmt = $this->pdo->prepare("SELECT * FROM " . self::TABLE . " WHERE player_id = :player_id AND puzzle_name = :puzzle_name");
+        $stmt->execute(['player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
+        return $stmt->fetch();
+    }
 
-        // Update the field with the new value
-        $stmt = $this->pdo->prepare("UPDATE " . self::TABLE . " SET $field = :value WHERE player_id = :player_id");
-        $stmt->execute(['player_id' => $playerId, 'value' => $value]);
+    public function createRecord(int $playerId, string $puzzle_name): void
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO " . self::TABLE . " (player_id, puzzle_name) VALUES (:player_id, :puzzle_name)");
+        $stmt->execute(['player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
+    }
+    
+    public function updateRecordTime(int $playerId, string $puzzle_name, int $time): void
+    {
+        $stmt = $this->pdo->prepare("UPDATE " . self::TABLE . " SET time = :time WHERE player_id = :player_id AND puzzle_name = :puzzle_name");
+        $stmt->execute(['time' => $time, 'player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
+    }
 
-        return true; // Success
+    public function updateRecordAttempts(int $playerId, string $puzzle_name, int $attempts): void
+    {
+        $stmt = $this->pdo->prepare("UPDATE " . self::TABLE . " SET attempts = :attempts WHERE player_id = :player_id AND puzzle_name = :puzzle_name");
+        $stmt->execute(['attempts' => $attempts, 'player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
     }
 }
