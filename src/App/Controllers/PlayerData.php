@@ -6,18 +6,21 @@ namespace App\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use App\Repositories\PlayerDataRepository;
 use Valitron\Validator;
 
 class PlayerData
 {
     private Validator $updateValidator;
 
-    public function __construct()
+    public function __construct(private PlayerDataRepository $playerDataRepository)
     {
         $this->updateValidator = new Validator();
         $this->updateValidator->mapFieldsRules([
             "id" => ["required"],
-            "data" => ["required"]
+            "data.name" => ["required", "string"],
+            "data.time" => ["optional", "integer"],
+            "data.attempts" => ["optional", "integer"]
         ]);
     }
 
@@ -34,26 +37,18 @@ class PlayerData
         $id = $body["id"];
         $data = $body["data"];
 
-        // Update the data in the database by iterating over the data array
-        // and updating the corresponding fields in the database
-        // The key in the data array is the field name and the value is the new value
-
-        $updatedFieldsStatus = [];
-        foreach ($data as $field => $value) {
-            // TODO: Update the field in the database and store the status of the operation
-            // The following line is a placeholder for the actual update operation
-            $status = true;
-
-            // Add the status of the update operation to the response
-            $updatedFieldsStatus[$field] = $status;
+        if (isset($data["time"])) {
+            $this->playerDataRepository->updateRecordTime($id, $data["name"], $data["time"]);
         }
 
-        $responseBody = json_encode([
-            "updatedFieldsStatus" => $updatedFieldsStatus
-        ], JSON_FORCE_OBJECT);
+        if (isset($data["attempts"])) {
+            $this->playerDataRepository->updateRecordAttempts($id, $data["name"], $data["attempts"]);
+        }
 
-        $response->getBody()
-                 ->write($responseBody);
+        $response->getBody()->write(json_encode([
+            "status" => "success",
+            "message" => "Player data updated"
+        ], JSON_FORCE_OBJECT));
 
         return $response;
     }
