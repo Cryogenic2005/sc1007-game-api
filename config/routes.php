@@ -49,10 +49,14 @@ $app->group('/api', function (RouteCollectorProxy $group) {
 
         $group->group('/playerdata', function (RouteCollectorProxy $group){
 
-            $group->get('/{id:[0-9]+}', [PlayerData::class, 'getAllData']);
-
-            $group->get('/{id:[0-9]+}/{name}', [PlayerData::class, 'getPuzzleData']);
+            $group->group('/{id:[0-9]+}', function (RouteCollectorProxy $group) {
     
+                $group->get('', [PlayerData::class, 'getAllData']);
+    
+                $group->get('/{name}', [PlayerData::class, 'getPuzzleData']);
+    
+            })->add(ValidateId::class);
+
             $group->patch('', [PlayerData::class, 'updateData']);
     
         });
