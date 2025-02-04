@@ -1,3 +1,9 @@
+START TRANSACTION;
+
+--
+-- Create database
+--
+
 CREATE DATABASE IF NOT EXISTS `sc1007_db`;
 
 USE `sc1007_db`;
@@ -28,8 +34,8 @@ CREATE TABLE IF NOT EXISTS `refresh_tokens` (
 -- Create users for the database
 --
 
-CREATE USER 'account_info_user'@'localhost' IDENTIFIED BY 'PLACEHOLDER_PASSWORD';
-CREATE USER 'refresh_tokens_user'@'localhost' IDENTIFIED BY 'PLACEHOLDER_PASSWORD';
+CREATE USER IF NOT EXISTS 'account_info_user'@'localhost' IDENTIFIED BY 'PLACEHOLDER_PASSWORD';
+CREATE USER IF NOT EXISTS 'refresh_tokens_user'@'localhost' IDENTIFIED BY 'PLACEHOLDER_PASSWORD';
 
 --
 -- Grant permissions to the users
@@ -39,3 +45,5 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON `sc1007_db`.`account_info` TO 'account_i
 GRANT SELECT, INSERT, DELETE ON `sc1007_db`.`refresh_tokens` TO 'refresh_tokens_user'@'localhost';
 
 FLUSH PRIVILEGES;
+
+COMMIT;
