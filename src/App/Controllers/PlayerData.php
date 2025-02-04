@@ -18,7 +18,7 @@ class PlayerData
         $this->updateValidator = new Validator();
         $this->updateValidator->mapFieldsRules([
             "id" => ["required"],
-            "data.name" => ["required", "string"],
+            "data.name" => ["required"],
             "data.time" => ["optional", "integer"],
             "data.attempts" => ["optional", "integer"]
         ]);
