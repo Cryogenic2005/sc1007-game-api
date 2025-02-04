@@ -37,6 +37,10 @@ class PlayerData
         $id = $body["id"];
         $data = $body["data"];
 
+        if (!$this->playerDataRepository->hasRecord($id, $data["name"])) {
+            $this->playerDataRepository->createRecord($id, $data["name"]);
+        }
+
         if (isset($data["time"])) {
             $this->playerDataRepository->updateRecordTime($id, $data["name"], $data["time"]);
         }
