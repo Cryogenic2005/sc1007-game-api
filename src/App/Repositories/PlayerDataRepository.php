@@ -20,19 +20,25 @@ class PlayerDataRepository
 
     public function createRecord(int $playerId, string $puzzle_name): void
     {
-        $stmt = $this->pdo->prepare("INSERT INTO " . self::TABLE . " (player_id, puzzle_name) VALUES (:player_id, :puzzle_name)");
+        $query = "INSERT INTO " . self::TABLE . " (player_id, puzzle_name) VALUES (:player_id, :puzzle_name)";
+        $stmt = $this->pdo->prepare($query);
+
         $stmt->execute(['player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
     }
     
     public function updateRecordTime(int $playerId, string $puzzle_name, int $time): void
     {
-        $stmt = $this->pdo->prepare("UPDATE " . self::TABLE . " SET time = :time WHERE player_id = :player_id AND puzzle_name = :puzzle_name");
+        $query = "UPDATE " . self::TABLE . " SET time = :time WHERE player_id = :player_id AND puzzle_name = :puzzle_name";
+        $stmt = $this->pdo->prepare($query);
+
         $stmt->execute(['time' => $time, 'player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
     }
 
     public function updateRecordAttempts(int $playerId, string $puzzle_name, int $attempts): void
     {
-        $stmt = $this->pdo->prepare("UPDATE " . self::TABLE . " SET attempts = :attempts WHERE player_id = :player_id AND puzzle_name = :puzzle_name");
+        $query = "UPDATE " . self::TABLE . " SET attempts = :attempts WHERE player_id = :player_id AND puzzle_name = :puzzle_name";
+        $stmt = $this->pdo->prepare($query);
+
         $stmt->execute(['attempts' => $attempts, 'player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
     }
 }
