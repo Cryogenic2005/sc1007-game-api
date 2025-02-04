@@ -24,6 +24,22 @@ class PlayerData
         ]);
     }
 
+    public function getAllData(Request $request, Response $response, string $id)
+    {
+        $data = $this->playerDataRepository->getRecord((int) $id);
+
+        $response->getBody()->write(json_encode($data, JSON_FORCE_OBJECT));
+        return $response;
+    }
+
+    public function getPuzzleData(Request $request, Response $response, string $id, string $name)
+    {
+        $data = $this->playerDataRepository->getRecord((int) $id, $name);
+
+        $response->getBody()->write(json_encode($data[0], JSON_FORCE_OBJECT));
+        return $response;
+    }
+
     public function updateData(Request $request, Response $response)
     {
         $body = $request->getParsedBody();
