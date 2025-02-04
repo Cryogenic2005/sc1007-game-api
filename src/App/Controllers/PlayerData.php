@@ -17,10 +17,9 @@ class PlayerData
     {
         $this->updateValidator = new Validator();
         $this->updateValidator->mapFieldsRules([
-            "id" => ["required"],
-            "data.name" => ["required"],
-            "data.time" => ["optional", "integer"],
-            "data.attempts" => ["optional", "integer"]
+            "name" => ["required"],
+            "time" => ["optional", "integer"],
+            "attempts" => ["optional", "integer"]
         ]);
     }
 
@@ -40,7 +39,7 @@ class PlayerData
         return $response;
     }
 
-    public function updateData(Request $request, Response $response)
+    public function updateData(Request $request, Response $response, string $id)
     {
         $body = $request->getParsedBody();
         $validator = $this->updateValidator->withData($body);
@@ -50,19 +49,21 @@ class PlayerData
             return $response->withStatus(400);
         }
 
-        $id = $body["id"];
-        $data = $body["data"];
+        $id = (int) $id; // Cast to integer
+        $name = $body["name"];
+        $time = $body["time"] ?? null;
+        $attempts = $body["attempts"] ?? null;
 
-        if (!$this->playerDataRepository->hasRecord($id, $data["name"])) {
-            $this->playerDataRepository->createRecord($id, $data["name"]);
+        if (!$this->playerDataRepository->hasRecord($id, $name)) {
+            $this->playerDataRepository->createRecord($id, $name);
         }
 
-        if (isset($data["time"])) {
-            $this->playerDataRepository->updateRecordTime($id, $data["name"], $data["time"]);
+        if ($time !== null) {
+            $this->playerDataRepository->updateRecordTime($id, $name, $time);
         }
 
-        if (isset($data["attempts"])) {
-            $this->playerDataRepository->updateRecordAttempts($id, $data["name"], $data["attempts"]);
+        if ($attempts !== null) {
+            $this->playerDataRepository->updateRecordAttempts($id, $name, $attempts);
         }
 
         $response->getBody()->write(json_encode([

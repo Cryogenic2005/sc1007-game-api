@@ -53,11 +53,11 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     
                 $group->get('', [PlayerData::class, 'getAllData']);
     
+                $group->patch('', [PlayerData::class, 'updateData']);
+                
                 $group->get('/{name}', [PlayerData::class, 'getPuzzleData']);
-    
+            
             })->add(ValidateId::class);
-
-            $group->patch('', [PlayerData::class, 'updateData']);
     
         });
 
