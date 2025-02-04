@@ -11,11 +11,27 @@ class PlayerDataRepository
 
     public function __construct(private \PDO $pdo) {}
 
-    public function getRecord(int $userId, string $puzzle_name): array
+    public function getRecord(int $userId, string $puzzle_name = null): array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM " . self::TABLE . " WHERE user_id = :user_id AND puzzle_name = :puzzle_name");
-        $stmt->execute(['user_id' => $userId, 'puzzle_name' => $puzzle_name]);
-        return $stmt->fetch();
+        $query = "SELECT `puzzle_name`, `time`, `attempts` FROM " . self::TABLE . " WHERE user_id = :user_id";
+
+        if ($puzzle_name) {
+            $query .= " AND puzzle_name = :puzzle_name";
+        }
+
+        $stmt = $this->pdo->prepare($query);
+
+        $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+
+        if ($puzzle_name) {
+            $stmt->bindParam(':puzzle_name', $puzzle_name, \PDO::PARAM_STR);
+        }
+
+        $stmt->execute();
+
+        if ($stmt->rowCount() === 0) { return []; }
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function hasRecord(int $userId, string $puzzle_name): bool
