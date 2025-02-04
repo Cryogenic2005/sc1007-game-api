@@ -3,6 +3,7 @@
 use App\Database;
 use App\Repositories\UserRepository;
 use App\Repositories\TokenRepository;
+use App\Repositories\PlayerDataRepository;
 
 return [
     Database::class => function() {
@@ -21,4 +22,10 @@ return [
                          ->getPDO($_SERVER["TOKEN_MANAGER_USER"], $_SERVER["TOKEN_MANAGER_PASSWORD"]);
         return new TokenRepository($pdo);
     },
+
+    PlayerDataRepository::class => function($container) {
+        $pdo = $container->get(Database::class)
+                         ->getPDO($_SERVER["PLAYER_DATA_USER"], $_SERVER["PLAYER_DATA_PASSWORD"]);
+        return new PlayerDataRepository($pdo);
+    }
 ];
