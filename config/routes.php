@@ -48,8 +48,12 @@ $app->group('/api', function (RouteCollectorProxy $group) {
         });
 
         $group->group('/playerdata', function (RouteCollectorProxy $group){
+
+            $group->get('/{id:[0-9]+}', [PlayerData::class, 'getAllData']);
+
+            $group->get('/{id:[0-9]+}/{name}', [PlayerData::class, 'getPuzzleData']);
     
-            $group->patch('', [PlayerData::class, 'updateData']); // Update player data
+            $group->patch('', [PlayerData::class, 'updateData']);
     
         });
 
