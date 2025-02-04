@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `player_data` (
 
 CREATE USER 'account_info_user'@'localhost' IDENTIFIED BY 'PLACEHOLDER_PASSWORD';
 CREATE USER 'refresh_tokens_user'@'localhost' IDENTIFIED BY 'PLACEHOLDER_PASSWORD';
+CREATE USER 'player_data_user'@'localhost' IDENTIFIED BY 'PLACEHOLDER_PASSWORD';
 
 --
 -- Grant permissions to the users
@@ -48,5 +49,6 @@ CREATE USER 'refresh_tokens_user'@'localhost' IDENTIFIED BY 'PLACEHOLDER_PASSWOR
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON `sc1007_db`.`account_info` TO 'account_info_user'@'localhost';
 GRANT SELECT, INSERT, DELETE ON `sc1007_db`.`refresh_tokens` TO 'refresh_tokens_user'@'localhost';
+GRANT SELECT, INSERT, UPDATE ON `sc1007_db`.`player_data` TO 'player_data_user'@'localhost';
 
 FLUSH PRIVILEGES;
