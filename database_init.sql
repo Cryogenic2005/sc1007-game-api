@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS `player_data` (
   `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` mediumint(8) UNSIGNED NOT NULL,
   `puzzle_name` varchar(30) NOT NULL COMMENT 'Name of the puzzle',
-  `time` int(11) NOT NULL COMMENT 'Time taken to complete the puzzle',
-  `attempts` int(11) NOT NULL COMMENT 'Number of attempts made to complete the puzzle',
+  `time` int(11) NULL COMMENT 'Time taken to complete the puzzle',
+  `attempts` int(11) NULL COMMENT 'Number of attempts made to complete the puzzle',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `unique_record` (`user_id`, `puzzle_name`),
   FOREIGN KEY (`user_id`) REFERENCES `account_info`(`id`) ON DELETE CASCADE
