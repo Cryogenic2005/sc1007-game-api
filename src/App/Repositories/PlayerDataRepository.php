@@ -18,6 +18,15 @@ class PlayerDataRepository
         return $stmt->fetch();
     }
 
+    public function hasRecord(int $playerId, string $puzzle_name): bool
+    {
+        $query = "SELECT COUNT(*) FROM " . self::TABLE . " WHERE player_id = :player_id AND puzzle_name = :puzzle_name";
+        $stmt = $this->pdo->prepare($query);
+        
+        $stmt->execute(['player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
+        return $stmt->fetchColumn() > 0;
+    }
+
     public function createRecord(int $playerId, string $puzzle_name): void
     {
         $query = "INSERT INTO " . self::TABLE . " (player_id, puzzle_name) VALUES (:player_id, :puzzle_name)";
