@@ -11,43 +11,43 @@ class PlayerDataRepository
 
     public function __construct(private \PDO $pdo) {}
 
-    public function getRecord(int $playerId, string $puzzle_name): array
+    public function getRecord(int $userId, string $puzzle_name): array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM " . self::TABLE . " WHERE player_id = :player_id AND puzzle_name = :puzzle_name");
-        $stmt->execute(['player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
+        $stmt = $this->pdo->prepare("SELECT * FROM " . self::TABLE . " WHERE user_id = :user_id AND puzzle_name = :puzzle_name");
+        $stmt->execute(['user_id' => $userId, 'puzzle_name' => $puzzle_name]);
         return $stmt->fetch();
     }
 
-    public function hasRecord(int $playerId, string $puzzle_name): bool
+    public function hasRecord(int $userId, string $puzzle_name): bool
     {
-        $query = "SELECT COUNT(*) FROM " . self::TABLE . " WHERE player_id = :player_id AND puzzle_name = :puzzle_name";
+        $query = "SELECT COUNT(*) FROM " . self::TABLE . " WHERE user_id = :user_id AND puzzle_name = :puzzle_name";
         $stmt = $this->pdo->prepare($query);
         
-        $stmt->execute(['player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
+        $stmt->execute(['user_id' => $userId, 'puzzle_name' => $puzzle_name]);
         return $stmt->fetchColumn() > 0;
     }
 
-    public function createRecord(int $playerId, string $puzzle_name): void
+    public function createRecord(int $userId, string $puzzle_name): void
     {
-        $query = "INSERT INTO " . self::TABLE . " (player_id, puzzle_name) VALUES (:player_id, :puzzle_name)";
+        $query = "INSERT INTO " . self::TABLE . " (user_id, puzzle_name) VALUES (:user_id, :puzzle_name)";
         $stmt = $this->pdo->prepare($query);
 
-        $stmt->execute(['player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
+        $stmt->execute(['user_id' => $userId, 'puzzle_name' => $puzzle_name]);
     }
     
-    public function updateRecordTime(int $playerId, string $puzzle_name, int $time): void
+    public function updateRecordTime(int $userId, string $puzzle_name, int $time): void
     {
-        $query = "UPDATE " . self::TABLE . " SET time = :time WHERE player_id = :player_id AND puzzle_name = :puzzle_name";
+        $query = "UPDATE " . self::TABLE . " SET time = :time WHERE user_id = :user_id AND puzzle_name = :puzzle_name";
         $stmt = $this->pdo->prepare($query);
 
-        $stmt->execute(['time' => $time, 'player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
+        $stmt->execute(['time' => $time, 'user_id' => $userId, 'puzzle_name' => $puzzle_name]);
     }
 
-    public function updateRecordAttempts(int $playerId, string $puzzle_name, int $attempts): void
+    public function updateRecordAttempts(int $userId, string $puzzle_name, int $attempts): void
     {
-        $query = "UPDATE " . self::TABLE . " SET attempts = :attempts WHERE player_id = :player_id AND puzzle_name = :puzzle_name";
+        $query = "UPDATE " . self::TABLE . " SET attempts = :attempts WHERE user_id = :user_id AND puzzle_name = :puzzle_name";
         $stmt = $this->pdo->prepare($query);
 
-        $stmt->execute(['attempts' => $attempts, 'player_id' => $playerId, 'puzzle_name' => $puzzle_name]);
+        $stmt->execute(['attempts' => $attempts, 'user_id' => $userId, 'puzzle_name' => $puzzle_name]);
     }
 }
