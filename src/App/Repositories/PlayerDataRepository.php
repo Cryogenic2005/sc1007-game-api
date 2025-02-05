@@ -13,7 +13,7 @@ class PlayerDataRepository
 
     public function getRecord(int $userId, string $puzzle_name = null): array
     {
-        $query = "SELECT `puzzle_name`, `time`, `attempts` FROM " . self::TABLE . " WHERE user_id = :user_id";
+        $query = "SELECT `puzzle_name`, `time`, `attempts`, `solved` FROM " . self::TABLE . " WHERE user_id = :user_id";
 
         if ($puzzle_name) {
             $query .= " AND puzzle_name = :puzzle_name";
@@ -65,5 +65,17 @@ class PlayerDataRepository
         $stmt = $this->pdo->prepare($query);
 
         $stmt->execute(['attempts' => $attempts, 'user_id' => $userId, 'puzzle_name' => $puzzle_name]);
+    }
+
+    public function updateRecordSolved(int $userId, string $puzzle_name, bool $solved): void
+    {
+        $query = "UPDATE " . self::TABLE . " SET solved = :solved WHERE user_id = :user_id AND puzzle_name = :puzzle_name";
+        $stmt = $this->pdo->prepare($query);
+        
+        $stmt->bindParam(':solved', $solved, \PDO::PARAM_BOOL);
+        $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+        $stmt->bindParam(':puzzle_name', $puzzle_name, \PDO::PARAM_STR);
+
+        $stmt->execute();
     }
 }

@@ -19,7 +19,8 @@ class PlayerData
         $this->updateValidator->mapFieldsRules([
             "name" => ["required"],
             "time" => ["optional", "integer"],
-            "attempts" => ["optional", "integer"]
+            "attempts" => ["optional", "integer"],
+            "solved" => ["optional", "boolean"],
         ]);
     }
 
@@ -53,6 +54,16 @@ class PlayerData
         $name = $body["name"];
         $time = $body["time"] ?? null;
         $attempts = $body["attempts"] ?? null;
+        $solved = $body["solved"] ?? null;
+
+        $updated = $time !== null || $attempts !== null || $solved !== null;
+        if (!$updated) {
+            $response->getBody()->write(json_encode([
+                "status" => "warning",
+                "message" => "No data provided to update"
+            ], JSON_FORCE_OBJECT));
+            return $response;
+        }
 
         if (!$this->playerDataRepository->hasRecord($id, $name)) {
             $this->playerDataRepository->createRecord($id, $name);
@@ -64,6 +75,10 @@ class PlayerData
 
         if ($attempts !== null) {
             $this->playerDataRepository->updateRecordAttempts($id, $name, $attempts);
+        }
+
+        if ($solved !== null) {
+            $this->playerDataRepository->updateRecordSolved($id, $name, $solved);
         }
 
         $response->getBody()->write(json_encode([
