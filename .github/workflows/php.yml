@@ -64,4 +64,4 @@ jobs:
           docker info
 
       - name: Run PHPUnit tests
-        run: ./vendor/bin/phpunit --testdox
+        run: ./vendor/bin/phpunit test
