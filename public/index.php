@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use DI\ContainerBuilder;
-use Slim\Factory\AppFactory;
-use Slim\Handlers\Strategies\RequestResponseArgs;
-use Middlewares\TrailingSlash;
+use App\AppBuilder;
+use Dotenv\Dotenv;
 
 define('APP_ROOT', dirname(__DIR__));
 
@@ -14,33 +12,9 @@ require_once APP_ROOT . '/vendor/autoload.php';
 
 // Load the environment variables
 if (file_exists(APP_ROOT . '/.env')) {
-    $dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
+    $dotenv = Dotenv::createImmutable(APP_ROOT);
     $dotenv->load();
 }
 
-// Build the container
-$containerBuilder = new ContainerBuilder();
-
-// Add container definitions
-$container = $containerBuilder->addDefinitions(APP_ROOT . '/config/definitions.php')
-                                ->build();
-
-AppFactory::setContainer($container);
-
-// Create a new Slim app
-$app = AppFactory::create();
-
-// Set the default invocation strategy
-$app->getRouteCollector()->setDefaultInvocationStrategy(new RequestResponseArgs());
-// Add middleware
-$app->addBodyParsingMiddleware(); // Add body parsing middleware
-$app->addErrorMiddleware(displayErrorDetails: true,
-                         logErrors: true, 
-                         logErrorDetails: true); // Add error handling middleware
-$app->add(TrailingSlash::class); // Add trailing slash middleware
-
-// Load the routes
-require_once APP_ROOT . '/config/routes.php';
-
-// Run the Slim app
-$app->run();
+$app = new AppBuilder();
+$app->get()->run();

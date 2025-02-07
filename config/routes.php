@@ -15,52 +15,58 @@ use App\Middleware\AddJsonResponseHeader;   // Middleware for adding JSON respon
 use App\Middleware\ValidateId;              // Middleware for validating an ID
 use App\Middleware\ValidateJWT;             // Middleware for validating a JWT
 
-// Route for the root of the API
-$app->group('/api', function (RouteCollectorProxy $group) {
+return function ($app) {
+    // Route for the root of the API
+    $app->group('/api', function (RouteCollectorProxy $group) {
 
-    $group->get('', ApiRoot::class); // Display a welcome message (Use this route to test if the API is working)
-
-    $group->post('/login', Login::class); // Login to the API
-
-    $group->post('/token', TokenIssuer::class); // Retrieve a new JWT
-
-    $group->group('', function (RouteCollectorProxy $group) {
+        // Display a welcome message (Used for testing if API works)
+        $group->get('', ApiRoot::class); 
     
-        // Route for submitting code to be executed
-        $group->post('/code', CodeSubmission::class);
-
-        // Account routes
-        $group->group('/account', function (RouteCollectorProxy $group){
+        $group->post('/login', Login::class); 
     
-            $group->get('', [Account::class, 'getAll']); // Get all accounts
+        $group->post('/token', TokenIssuer::class); // Retrieve a new JWT
     
-            $group->post('', [Account::class, 'create']); // Create new account
+        // Group for routes that require a valid JWT
+        $group->group('', function (RouteCollectorProxy $group) {
+        
+            // Route for submitting code to be executed
+            $group->post('/code', CodeSubmission::class);
     
-            // Actions that require a specific account ID
-            $group->group('/{id:[0-9+]}', function (RouteCollectorProxy $group){
+            // Operations on account data
+            $group->group('/account', function (RouteCollectorProxy $group){
+        
+                $group->get('', [Account::class, 'getAll']);
+        
+                $group->post('', [Account::class, 'create']);
+        
+                // Operations on a specific account
+                $group->group('/{id:[0-9+]}', function (RouteCollectorProxy $group){
+        
+                    $group->get('', [Account::class, 'getById']);
+        
+                    $group->patch('', [Account::class, 'updatePassword']);
+        
+                })->add(ValidateId::class); // Validate the requested account ID
+        
+            });
     
-                $group->get('', [Account::class, 'getById']); // Get account info
+            // Operations on player data
+            $group->group('/playerdata', function (RouteCollectorProxy $group){
     
-                $group->patch('', [Account::class, 'updatePassword']); // Update account password
-    
-            })->add(ValidateId::class); // Validate the account ID
-    
-        });
-
-        $group->group('/playerdata', function (RouteCollectorProxy $group){
-
-            $group->group('/{id:[0-9]+}', function (RouteCollectorProxy $group) {
-    
-                $group->get('', [PlayerData::class, 'getAllData']);
-    
-                $group->patch('', [PlayerData::class, 'updateData']);
+                // Operations on player data of a specific player
+                $group->group('/{id:[0-9]+}', function (RouteCollectorProxy $group) {
+        
+                    $group->get('', [PlayerData::class, 'getAllData']);
+        
+                    $group->patch('', [PlayerData::class, 'updateData']);
+                    
+                    $group->get('/{name}', [PlayerData::class, 'getPuzzleData']);
                 
-                $group->get('/{name}', [PlayerData::class, 'getPuzzleData']);
-            
-            })->add(ValidateId::class);
+                })->add(ValidateId::class); // Validate the requested player ID
+        
+            });
     
-        });
-
-    })->add(ValidateJWT::class); // Require a valid JWToken for all routes in this group
-
-})->add(AddJsonResponseHeader::class);  // Add JSON response header to API responses
+        })->add(ValidateJWT::class);
+    
+    })->add(AddJsonResponseHeader::class);  // Add JSON response header to API responses
+};
