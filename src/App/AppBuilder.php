@@ -16,9 +16,12 @@ class AppBuilder
 
     public function __construct()
     {
+        if (!defined('APP_ROOT')) {
+            define('APP_ROOT', dirname(__DIR__, 2));
+        }
+
         $this->addContainer();
 
-        // Create a new Slim app
         $this->app = AppFactory::create();
         
         // Set the default invocation strategy
