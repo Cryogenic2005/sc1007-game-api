@@ -59,7 +59,7 @@ jobs:
           mysql -h 127.0.0.1 -u root --password=root test < database_init.sql
 
       - name: Run PHPUnit tests
-        run: ./vendor/bin/phpunit test
+        run: php ./vendor/bin/phpunit test
         env:
             DB_HOST: 127.0.0.1
             DB_DATABASE: test
