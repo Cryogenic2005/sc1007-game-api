@@ -3,7 +3,38 @@ name: Run Slim Tests
 on: [push, pull_request]
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+  
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          extensions: pdo, pdo_mysql
+          coverage: none
+  
+      - name: Install dependencies
+        run: composer install --no-progress --no-suggest --prefer-dist
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Save built files
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-build
+          path: .
+
   test:
+    needs: build
     runs-on: ubuntu-latest
 
     services:
@@ -17,51 +48,20 @@ jobs:
         options: --health-cmd="mysqladmin ping --host=localhost --user=root --password=root" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - name: Download built files
+        uses: actions/download-artifact@v3
         with:
-          php-version: 8.1
-          extensions: pdo, pdo_mysql
-          coverage: none
-
-      - name: Install dependencies
-        run: composer install --no-progress --no-suggest --prefer-dist
-
-      - name: Prepare environment
-        run: |
-          echo "APP_ENV=testing" > .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_DATABASE=test" >> .env
-          echo "DB_USERNAME=root" >> .env
-          echo "DB_PASSWORD=root" >> .env
-        env:
-          DB_HOST: 127.0.0.1
-          DB_DATABASE: test
-          DB_USERNAME: root
-          DB_PASSWORD: root
-
-      - name: Wait for MySQL to be ready
-        run: |
-          for i in {30..0}; do
-            if mysqladmin ping -h 127.0.0.1 -u root --password=root --silent; then
-              echo "MySQL is ready!"
-              break
-            fi
-            echo 'Waiting for MySQL...'
-            sleep 2
-          done
+          name: app-build
+          path: .
 
       - name: Initialize Database
         run: |
           mysql -h 127.0.0.1 -u root --password=root test < database_init.sql
 
-      - name: Set up Docker-in-Docker
-        run: |
-          sudo systemctl start docker
-          docker info
-
       - name: Run PHPUnit tests
         run: ./vendor/bin/phpunit test
+        env:
+            DB_HOST: 127.0.0.1
+            DB_DATABASE: test
+            DB_USERNAME: root
+            DB_PASSWORD: root
