@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `player_data` (
   `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` mediumint(8) UNSIGNED NOT NULL,
   `puzzle_name` varchar(30) NOT NULL COMMENT 'Name of the puzzle',
-  `time` int(11) UNSIGNED NULL COMMENT 'Time taken to complete the puzzle',
+  `time` int(11) NULL COMMENT 'Time taken to complete the puzzle',
   `attempts` int(11) UNSIGNED NULL COMMENT 'Number of attempts made to complete the puzzle',
   `solved` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`),
