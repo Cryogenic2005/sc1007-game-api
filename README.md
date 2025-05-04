@@ -24,7 +24,7 @@ The API is built using PHP and the Slim framework, providing endpoints for user 
     composer install
     ```
     
-3. **Configure the .env file with your environment variables (based on .env.cample)**
+3. **Configure the .env file with your environment variables (based on .env.sample)**
 
 4. **Initialize the database:**
 
